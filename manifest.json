@@ -1,5 +1,6 @@
 {
   "manifest_version": 2,
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
   "version": "1.0",
   "name": "__MSG_name__",
   "description": "__MSG_about__",
@@ -13,7 +14,8 @@
   },
   "background": {
     "scripts": [
-      "scripts/displayListener.js"
+      "scripts/displayListener.js",
+      "scripts/onInstalled.js"
     ]
   },
   "content_scripts": [

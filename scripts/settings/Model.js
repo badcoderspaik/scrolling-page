@@ -1,165 +1,177 @@
 var OPTIONS = (function (opt) {
-  /**
-   * Реализация Модели приложения настроек
-   * @class Model
-   * @parent OPTIONS
-   */
-  opt.Model = (function () {
     /**
-     * Объект, хранящийся в локальном хранилище chrome.sync.storage.<br>
-     * Запись в объект производится функцией chrome.sync.storage.set.<br>
-     * Чтение объекта производится функцией chrome.sync.storage.get.<br>
-     * settings.src - путь к файлу изображения кнопок,<br>
-     * settings.src - строка, определяющая положение родительского элемента-контейнера кнопок.<br>
-     * Может принимать одно из следующих значений:<br>
-     * bottom_right,<br>
-     * center_right,<br>
-     * top_left,<br>
-     * bottom_left,<br>
-     * center_left,<br>
-     * top_left,<br>
-     * center_bottom.
-     *
-     * settigs.area_height - высота areas - зон расположения кнопок.
-     *
-     * settings.speed - скорость прокрутки
-     * @private
-     * @property settings
-     * @type {Object}
+     * Реализация Модели приложения настроек
+     * @class Model
+     * @parent OPTIONS
      */
-    var settings = {},
-      /**
-       * Объект класса Observer. Следит за изменением изображения кнопок
-       * @private
-       * @property srcObserver
-       * @type {Observer}
-       */
-      srcObserver = new opt.Observer,
-      /**
-       * Объект класса Observer. Следит за изменением высоты areas - зон расположения кнопок
-       * @private
-       * @property areaObserver
-       * @type {Observer}
-       */
-      areaObserver = new opt.Observer,
-      /**
-       * Объект класса Observer. Следит за изменением прозрачности Container - родительского блока кнопок
-       * @private
-       * @property opacityObserver
-       * @type {Observer}
-       */
-      opacityObserver = new opt.Observer,
-      /**
-       *
-       * @type {Observer}
-       */
-      speedObserver = new opt.Observer,
-      speed_output_observer = new opt.Observer,
+    opt.Model = (function () {
+        /**
+         * Объект, хранящийся в локальном хранилище chrome.sync.storage.<br>
+         * Запись в объект производится функцией chrome.sync.storage.set.<br>
+         * Чтение объекта производится функцией chrome.sync.storage.get.<br>
+         * settings.src - путь к файлу изображения кнопок,<br>
+         * settings.src - строка, определяющая положение родительского элемента-контейнера кнопок.<br>
+         * Может принимать одно из следующих значений:<br>
+         * bottom_right,<br>
+         * center_right,<br>
+         * top_left,<br>
+         * bottom_left,<br>
+         * center_left,<br>
+         * top_left,<br>
+         * center_bottom.
+         *
+         * settigs.area_height - высота areas - зон расположения кнопок.
+         *
+         * settings.speed - скорость прокрутки
+         * @private
+         * @property settings
+         * @type {Object}
+         */
+        var settings = {},
+            /**
+             * Объект класса Observer. Следит за изменением изображения кнопок
+             * @private
+             * @property srcObserver
+             * @type {Observer}
+             */
+            srcObserver = new opt.Observer,
+            /**
+             * Объект класса Observer. Следит за изменением высоты areas - зон расположения кнопок
+             * @private
+             * @property areaObserver
+             * @type {Observer}
+             */
+            areaObserver = new opt.Observer,
+            /**
+             * Объект класса Observer. Следит за изменением прозрачности Container - родительского блока кнопок
+             * @private
+             * @property opacityObserver
+             * @type {Observer}
+             */
+            opacityObserver = new opt.Observer,
+            /**
+             *
+             * @type {Observer}
+             */
+            speedObserver = new opt.Observer,
+            speed_output_observer = new opt.Observer,
 
-      setSrc = function (src) {
-        settings.src = src;
-        chrome.storage.sync.set(settings, function () {
-        });
-        //srcObserver.notify();
-      },
+            setSrc = function (src) {
+                settings.src = src;
+                chrome.storage.sync.set(settings, function () {
+                });
 
-      getSrc = function () {
-        return settings.src;
-      },
+                chrome.tabs.query({}, function (tabs) {
+                    for (var i = 0; i < tabs.length; i++) {
+                        chrome.tabs.sendMessage(tabs[i].id, {message: 'src'}, function (response) {});
+                    }
+                });
+                //srcObserver.notify();
+            },
 
-      setPosition = function (position, area_height) {
-        settings.position = position;
-        chrome.storage.sync.set(settings, function () {
-        });
-        areaObserver.notify(area_height);
-      },
+            getSrc = function () {
+                return settings.src;
+            },
 
-      getPosition = function () {
-        return settings.position;
-      },
+            setPosition = function (position, area_height) {
+                settings.position = position;
+                chrome.storage.sync.set(settings, function () {
+                });
+                areaObserver.notify(area_height);
 
-      setAreaHeight = function (height) {
-        settings.area_height = height;
-        chrome.storage.sync.set(settings, function () {
-        });
-      },
+                chrome.tabs.query({}, function (tabs) {
+                    for (var i = 0; i < tabs.length; i++) {
+                        chrome.tabs.sendMessage(tabs[i].id, {message: 'position'}, function (response) {});
+                    }
+                });
+            },
 
-      getAreaHeight = function () {
-        return settings.area_height;
-      },
+            getPosition = function () {
+                return settings.position;
+            },
 
-      getSrcObserver = function () {
-        return srcObserver;
-      },
+            setAreaHeight = function (height) {
+                settings.area_height = height;
+                chrome.storage.sync.set(settings, function () {
+                });
+            },
 
-      getAreaObserver = function () {
-        return areaObserver;
-      },
+            getAreaHeight = function () {
+                return settings.area_height;
+            },
 
-      getOpacityObserver = function () {
-        return areaObserver;
-      },
+            getSrcObserver = function () {
+                return srcObserver;
+            },
 
-      getSpeedObserver = function () {
-        return speedObserver;
-      },
+            getAreaObserver = function () {
+                return areaObserver;
+            },
 
-      setOpacity = function (opacity) {
-        settings.opacity = opacity;
-        chrome.storage.sync.set(settings, function () {
-        });
-        opacityObserver.notify();
-      },
+            getOpacityObserver = function () {
+                return areaObserver;
+            },
 
-      getOpacity = function () {
-        return settings.opacity;
-      },
+            getSpeedObserver = function () {
+                return speedObserver;
+            },
 
-      setSpeed = function (speed) {
-        settings.speed = speed;
-        chrome.storage.sync.set(settings, function () {
-        });
-        speedObserver.notify();
-      },
+            setOpacity = function (opacity) {
+                settings.opacity = opacity;
+                chrome.storage.sync.set(settings, function () {
+                });
+                opacityObserver.notify();
+            },
 
-      getSpeed = function () {
-        return settings.speed;
-      },
+            getOpacity = function () {
+                return settings.opacity;
+            },
 
-      setMessage = function (message, node) {
-        node.textContent = chrome.i18n.getMessage(message);
-        return this;
-      };
+            setSpeed = function (speed) {
+                settings.speed = speed;
+                chrome.storage.sync.set(settings, function () {
+                });
+                speedObserver.notify();
+            },
 
-    return {
+            getSpeed = function () {
+                return settings.speed;
+            },
 
-      getSrcObserver: getSrcObserver,
-      getAreaObserver: getAreaObserver,
-      getOpacityObserver: getOpacityObserver,
-      getSpeedObserver: getSpeedObserver,
+            setMessage = function (message, node) {
+                node.textContent = chrome.i18n.getMessage(message);
+                return this;
+            };
 
-      setSrc: setSrc,
-      getSrc: getSrc,
+        return {
 
-      setPosition: setPosition,
-      getPosition: getPosition,
+            getSrcObserver: getSrcObserver,
+            getAreaObserver: getAreaObserver,
+            getOpacityObserver: getOpacityObserver,
+            getSpeedObserver: getSpeedObserver,
 
-      setAreaHeight: setAreaHeight,
-      getAreaHeight: getAreaHeight,
+            setSrc: setSrc,
+            getSrc: getSrc,
 
-      setOpacity: setOpacity,
-      getOpacity: getOpacity,
+            setPosition: setPosition,
+            getPosition: getPosition,
 
-      setSpeed: setSpeed,
-      getSpeed: getSpeed,
+            setAreaHeight: setAreaHeight,
+            getAreaHeight: getAreaHeight,
 
-      setMessage: setMessage,
-      set: setMessage
+            setOpacity: setOpacity,
+            getOpacity: getOpacity,
 
-    }
+            setSpeed: setSpeed,
+            getSpeed: getSpeed,
 
-  }());
+            setMessage: setMessage,
+            set: setMessage
 
-  return opt;
+        }
+
+    }());
+
+    return opt;
 
 }(OPTIONS || {}));

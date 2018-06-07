@@ -5,7 +5,7 @@ var OPTIONS = (function (opt) {
       opacity_range = opt.View.getOpacityRange(),
       speed_range = opt.View.getSpeedRange(),
       speed_output = opt.View.getSpeedOutput(),
-      opacity = items.opacity || 0.2,
+      opacity = items.opacity || 0.5,
       a_length = areas.length,
       areas_height = items.area_height || 105,
       i;
@@ -16,7 +16,9 @@ var OPTIONS = (function (opt) {
 
     panel.arrow_up.setSrc(src);
     panel.arrow_down.setSrc(src);
-    panel.setOpacity(opacity);
+    panel.arrow_up.setOpacity(opacity);
+    panel.arrow_down.setOpacity(opacity);
+    panel.getElement().style.display = items.display || 'block';
     opacity_range.value = opacity;
     speed_range.value = items.speed || 200;
     speed_output.textContent = items.speed ? items.speed + 'px' : speed_range.value + 'px';
@@ -26,4 +28,5 @@ var OPTIONS = (function (opt) {
     }, false);
 
   });
+
 }(OPTIONS || {}));

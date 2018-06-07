@@ -13,6 +13,7 @@
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-docco": "0.0.4",
+    "gulp-plumber": "^1.2.0",
     "gulp-uncomment": "^0.3.0",
     "gulp-uncomment-it": "^1.0.0",
     "gulp-yuidoc": "^0.1.2"

@@ -78,7 +78,8 @@ var OPTIONS = (function (opt) {
     });
 
     data.getOpacityObserver().addObserver(function () {
-      panel.setOpacity(data.getOpacity());
+      panel.arrow_down.setOpacity(data.getOpacity());
+      panel.arrow_up.setOpacity(data.getOpacity());
     });
 
     data.getSpeedObserver().addObserver(function () {
